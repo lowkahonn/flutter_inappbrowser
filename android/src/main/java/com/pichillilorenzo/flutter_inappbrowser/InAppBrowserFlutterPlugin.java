@@ -38,6 +38,17 @@ import android.util.Log;
 import com.pichillilorenzo.flutter_inappbrowser.ChromeCustomTabs.ChromeCustomTabsActivity;
 import com.pichillilorenzo.flutter_inappbrowser.ChromeCustomTabs.CustomTabActivityHelper;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,6 +72,8 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
   public static MethodChannel channel;
   public static Map<String, InAppBrowserActivity> webViewActivities = new HashMap<>();
   public static Map<String, ChromeCustomTabsActivity> chromeCustomTabsActivities = new HashMap<>();
+  private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 991;
+  private Result lastResult;
 
   protected static final String LOG_TAG = "IABFlutterPlugin";
 
@@ -298,10 +311,121 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
       case "getCopyBackForwardList":
         result.success(getCopyBackForwardList(uuid));
         break;
+      case "loadPaymentData":
+        {
+          if (call.arguments != null) {
+            lastResult = result;
+            PaymentDataRequest request = PaymentDataRequest.fromJson((String) call.arguments);
+            int env = WalletConstants.ENVIRONMENT_PRODUCTION;
+            PaymentsClient client = Wallet.getPaymentsClient(activity,
+                new Wallet.WalletOptions.Builder().setEnvironment(env).build());
+            Task<PaymentData> task = client.loadPaymentData(request);
+            AutoResolveHelper.resolveTask(task, activity, LOAD_PAYMENT_DATA_REQUEST_CODE);
+          }
+        }
       default:
         result.notImplemented();
     }
 
+  }
+
+  @Override
+  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
+      switch (resultCode) {
+        case Activity.RESULT_OK:
+          {
+            PaymentData paymentData = PaymentData.getFromIntent(data);
+            if (paymentData != null) {
+              this.callToDartOnPaymentSuccess(paymentData);
+            }
+            return true;
+          }
+        case Activity.RESULT_CANCELED:
+          {
+            this.callToDartOnCanceled();
+            return true;
+          }
+        case AutoResolveHelper.RESULT_ERROR:
+          Status status = AutoResolveHelper.getStatusFromIntent(data);
+          this.callToDartOnError(status);
+          return true;
+      }
+    }
+    return false;
+  }
+
+  private void callToDartOnPaymentSuccess(PaymentData paymentData) {
+    String paymentInfo = paymentData.toJson();
+    Log.d("PaymentData:", String.valueOf(paymentInfo));
+    
+    Map<String, Object> data = new HashMap<>();
+    if (paymentInfo != null) {
+        data.put("paymentData", paymentInfo);
+    }
+    lastResult.success(data);
+  }
+
+  private void callToDartOnError(String error) {
+    if (lastResult != null) {
+      Map<String, Object> data = new HashMap<>();
+      data.put("error", error);
+      lastResult.success(data);
+      lastResult = null;
+    }
+  }
+
+  private void callToDartOnError(Status status) {
+    if (lastResult != null) {
+      Map<String, Object> data = new HashMap<>();
+      if (status != null) {
+        String statusMessage = status.getStatusMessage();
+        if (TextUtils.isEmpty(statusMessage)) {
+            statusMessage = "payment error";
+        }
+        int code = status.getStatusCode();
+        String statusCode;
+        switch (code) {
+          case 8:
+            statusCode = "RESULT_INTERNAL_ERROR";
+            break;
+          case 10:
+            statusCode = "DEVELOPER_ERROR";
+            break;
+          case 15:
+            statusCode = "RESULT_TIMEOUT";
+            break;
+          case 16:
+            statusCode = "RESULT_CANCELED";
+            break;
+          case 18:
+            statusCode = "RESULT_DEAD_CLIENT";
+            break;
+          default:
+            statusCode = "UNKNOWN";
+        }
+
+        data.put("error", statusMessage);
+        data.put("status", statusCode);
+        data.put("description", status.toString());
+      } else {
+        data.put("error", "Wrong payment data");
+        data.put("status", "UNKNOWN");
+        data.put("description", "Payment finished without additional information");
+      }
+      lastResult.success(data);
+      lastResult = null;
+    }
+  }
+
+  private void callToDartOnCanceled() {
+    if (lastResult != null) {
+      Map<String, Object> data = new HashMap<>();
+      data.put("status", "RESULT_CANCELED");
+      data.put("description", "Canceled by user");
+      lastResult.success(data);
+      lastResult = null;
+    }
   }
 
   private void injectScriptCode(String uuid, String source, final Result result) {

@@ -7,6 +7,9 @@
     <application>
         <activity android:theme="@style/AppTheme" android:name=".InAppBrowserActivity" android:configChanges="orientation|screenSize"></activity>
         <activity android:theme="@style/ThemeTransparent" android:name=".ChromeCustomTabs.ChromeCustomTabsActivity" android:configChanges="orientation|screenSize"></activity>
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
     </application>
 
 </manifest>

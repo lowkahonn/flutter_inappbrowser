@@ -893,6 +893,12 @@ class InAppWebViewController {
     }
   }
 
+  Future<dynamic> loadPaymentData(String paymentDataRequest) async {
+    if (paymentDataRequest != null) {
+      return await _channel.invokeMethod('loadPaymentData', paymentDataRequest);
+    }
+  }
+
   ///Gets the URL for the current page.
   ///This is not always the same as the URL passed to [InAppWebView.onLoadStarted] because although the load for that URL has begun, the current page may not have changed.
   Future<String> getUrl() async {
