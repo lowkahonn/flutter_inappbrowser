@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashMap.toString;
 import java.util.List;
 import java.util.Map;
 
@@ -108,7 +107,10 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
     String source;
     String urlFile;
     final Activity activity = registrar.activity();
-    final String uuid = (String) call.argument("uuid");
+    final String uuid;
+    if (call.argument("uuid") != null) {
+      uuid = (String) call.argument("uuid");
+    }
 
     switch (call.method) {
       case "open":
@@ -313,9 +315,8 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         result.success(getCopyBackForwardList(uuid));
         break;
       case "loadPaymentData":
-        Log.d("paymentDataRequest", String.valueOf(paymentDataRequest));
-        JSONObject paymentDataRequest = new JSONObject((Map) call.argument("paymentDataRequest"));
-        PaymentDataRequest request = PaymentDataRequest.fromJson(paymentDataRequest.toString());
+        JSONObject paymentDataRequest = new JSONObject((Map)call.arguments);
+        PaymentDataRequest request = PaymentDataRequest.fromJson(paymentDataRequest);
         int env = WalletConstants.ENVIRONMENT_PRODUCTION;
         PaymentsClient client = Wallet.getPaymentsClient(activity,
             new Wallet.WalletOptions.Builder().setEnvironment(env).build());

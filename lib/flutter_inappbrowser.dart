@@ -148,6 +148,7 @@ class InAppBrowser {
         break;
       case "loadPaymentData":
         print(call.arguments);
+        print('loading paymentData from inappbrowser');
         loadPaymentData(call.arguments);
         break;
       default:
@@ -157,10 +158,7 @@ class InAppBrowser {
 
   Future<dynamic> loadPaymentData(Map paymentDataRequest) async {
     if (paymentDataRequest != null) {
-      Map<String, dynamic> args = <String, dynamic>{};
-      args.putIfAbsent('uuid', () => uuid);
-      args.putIfAbsent('paymentDataRequest', () => paymentDataRequest);
-      return await _ChannelManager.channel.invokeMethod('loadPaymentData', args);
+      return await _ChannelManager.channel.invokeMethod('loadPaymentData', paymentDataRequest);
     }
   }
   ///Opens an [url] in a new [InAppBrowser] instance.
