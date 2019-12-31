@@ -89,7 +89,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, final Result result) {
     String source;
     String urlFile;
     switch (call.method) {

@@ -146,11 +146,19 @@ class InAppBrowser {
         this._isOpened = false;
         onExit();
         break;
+      case "loadPaymentData":
+        loadPaymentData(call.arguments);
+        break;
       default:
         return webViewController._handleMethod(call);
     }
   }
 
+  Future<dynamic> loadPaymentData(String paymentDataRequest) async {
+    if (paymentDataRequest != null) {
+      return await _ChannelManager.channel.invokeMethod('loadPaymentData', paymentDataRequest);
+    }
+  }
   ///Opens an [url] in a new [InAppBrowser] instance.
   ///
   ///- [url]: The [url] to load. Call [encodeUriComponent()] on this if the [url] contains Unicode characters. The default value is `about:blank`.
@@ -890,12 +898,6 @@ class InAppWebViewController {
         break;
       default:
         throw UnimplementedError("Unimplemented ${call.method} method");
-    }
-  }
-
-  Future<dynamic> loadPaymentData(String paymentDataRequest) async {
-    if (paymentDataRequest != null) {
-      return await _channel.invokeMethod('loadPaymentData', paymentDataRequest);
     }
   }
 
