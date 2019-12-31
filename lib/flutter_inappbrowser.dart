@@ -156,7 +156,10 @@ class InAppBrowser {
 
   Future<dynamic> loadPaymentData(String paymentDataRequest) async {
     if (paymentDataRequest != null) {
-      return await _ChannelManager.channel.invokeMethod('loadPaymentData', paymentDataRequest);
+      Map<String, dynamic> args = <String, dynamic>{};
+      args.putIfAbsent('uuid', () => uuid);
+      args.putIfAbsent('paymentDataRequest', () => paymentDataRequest);
+      return await _ChannelManager.channel.invokeMethod('loadPaymentData', args);
     }
   }
   ///Opens an [url] in a new [InAppBrowser] instance.
