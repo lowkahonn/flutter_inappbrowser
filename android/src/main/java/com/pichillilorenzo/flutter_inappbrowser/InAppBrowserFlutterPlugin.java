@@ -312,8 +312,8 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         result.success(getCopyBackForwardList(uuid));
         break;
       case "loadPaymentData":
-        JSONObject paymentDataRequest = new JSONObject((Map) call.argument("paymentDataRequest"));
         Log.d("paymentDataRequest", String.valueOf(paymentDataRequest));
+        JSONObject paymentDataRequest = new JSONObject((Map) call.argument("paymentDataRequest"));
         PaymentDataRequest request = PaymentDataRequest.fromJson(paymentDataRequest.toString());
         int env = WalletConstants.ENVIRONMENT_PRODUCTION;
         PaymentsClient client = Wallet.getPaymentsClient(activity,
