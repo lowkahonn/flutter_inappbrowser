@@ -154,7 +154,7 @@ class InAppBrowser {
     }
   }
 
-  Future<dynamic> loadPaymentData(String paymentDataRequest) async {
+  Future<dynamic> loadPaymentData(Map paymentDataRequest) async {
     if (paymentDataRequest != null) {
       Map<String, dynamic> args = <String, dynamic>{};
       args.putIfAbsent('uuid', () => uuid);
