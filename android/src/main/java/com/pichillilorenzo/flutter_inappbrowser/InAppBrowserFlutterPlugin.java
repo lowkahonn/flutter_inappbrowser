@@ -311,29 +311,27 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         result.success(getCopyBackForwardList(uuid));
         break;
       case "loadPaymentData":
-        if (call.arguments != null) {
-          PaymentDataRequest request = PaymentDataRequest.fromJson((String) call.arguments);
-          int env = WalletConstants.ENVIRONMENT_PRODUCTION;
-          PaymentsClient client = Wallet.getPaymentsClient(activity,
-              new Wallet.WalletOptions.Builder().setEnvironment(env).build());
-          Task<PaymentData> task = client.loadPaymentData(request);
-          task.addOnSuccessListener(new OnSuccessListener<PaymentData>() {
-            @Override
-            public void onSuccess(PaymentData paymentData) {
-              if (paymentData.toJson() != null) {
-                Map<String, Object> data = new HashMap<>();
-                Log.d("PaymentData", String.valueOf(paymentData.toJson()));
-                data.put("paymentData", paymentData.toJson());
-                result.success(data);
-              }
+        PaymentDataRequest request = PaymentDataRequest.fromJson((String) call.argument("paymentDataRequest"));
+        int env = WalletConstants.ENVIRONMENT_PRODUCTION;
+        PaymentsClient client = Wallet.getPaymentsClient(activity,
+            new Wallet.WalletOptions.Builder().setEnvironment(env).build());
+        Task<PaymentData> task = client.loadPaymentData(request);
+        task.addOnSuccessListener(new OnSuccessListener<PaymentData>() {
+          @Override
+          public void onSuccess(PaymentData paymentData) {
+            if (paymentData.toJson() != null) {
+              Map<String, Object> data = new HashMap<>();
+              Log.d("PaymentData", String.valueOf(paymentData.toJson()));
+              data.put("paymentData", paymentData.toJson());
+              result.success(data);
             }
-          }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(Exception e) {
-              Log.d("GooglePayError", e.toString());
-            }
-          });
-        }
+          }
+        }).addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(Exception e) {
+            Log.d("GooglePayError", e.toString());
+          }
+        });
         break;
       default:
         result.notImplemented();
