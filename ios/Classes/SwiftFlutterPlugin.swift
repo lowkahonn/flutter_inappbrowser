@@ -240,6 +240,8 @@ public class SwiftFlutterPlugin: NSObject, FlutterPlugin {
             case "getCopyBackForwardList":
                 result(self.getCopyBackForwardList(uuid: uuid))
                 break
+            case "loadPaymentData":
+                break
             default:
                 result(FlutterMethodNotImplemented)
                 break

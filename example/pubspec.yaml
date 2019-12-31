@@ -15,6 +15,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_google_pay:
+    git:
+      url: git://github.com/lowkahonn/flutter-google-pay
+      ref: e771d3c
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

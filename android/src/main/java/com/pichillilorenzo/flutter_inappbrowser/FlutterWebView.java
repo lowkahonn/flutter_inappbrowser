@@ -15,6 +15,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -206,6 +217,30 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "getCopyBackForwardList":
         result.success((webView != null) ? webView.getCopyBackForwardList() : null);
+        break;
+      case "loadPaymentData":
+        if (call.arguments != null) {
+          PaymentDataRequest request = PaymentDataRequest.fromJson((String) call.arguments);
+          int env = WalletConstants.ENVIRONMENT_PRODUCTION;
+          PaymentsClient client = Wallet.getPaymentsClient(activity,
+              new Wallet.WalletOptions.Builder().setEnvironment(env).build());
+          Task<PaymentData> task = client.loadPaymentData(request);
+          task.addOnSuccessListener(new OnSuccessListener<PaymentData>() {
+            @Override
+            public void onSuccess(PaymentData paymentData) {
+              if (paymentData.toJson() != null) {
+                Map<String, Object> data = new HashMap<>();
+                Log.d("PaymentData", String.valueOf(paymentData.toJson()));
+                data.put("paymentData", paymentData.toJson());
+              }
+            }
+          }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+              Log.d("GooglePayError", e.toString());
+            }
+          });
+        }
         break;
       case "dispose":
         dispose();

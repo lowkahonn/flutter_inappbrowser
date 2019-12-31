@@ -35,7 +35,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 17
@@ -53,4 +53,5 @@ dependencies {
     implementation 'androidx.browser:browser:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
+    implementation 'com.google.android.gms:play-services-wallet:18.0.0'
 }

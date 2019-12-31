@@ -233,6 +233,8 @@ public class FlutterWebViewController: NSObject, FlutterPlatformView {
                 dispose()
                 result(true)
                 break
+            case "loadPaymentData":
+                break
             default:
                 result(FlutterMethodNotImplemented)
                 break
