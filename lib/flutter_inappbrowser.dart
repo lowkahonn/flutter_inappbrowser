@@ -147,6 +147,7 @@ class InAppBrowser {
         onExit();
         break;
       case "loadPaymentData":
+        print(call.arguments);
         loadPaymentData(call.arguments);
         break;
       default:
