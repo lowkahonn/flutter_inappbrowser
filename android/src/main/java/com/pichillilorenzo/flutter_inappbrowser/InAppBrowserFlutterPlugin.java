@@ -50,6 +50,7 @@ import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONObject;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -312,6 +313,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         break;
       case "loadPaymentData":
         JSONObject paymentDataRequest = new JSONObject((Map) call.argument("paymentDataRequest"));
+        Log.d("paymentDataRequest", String.valueOf(paymentDataRequest));
         PaymentDataRequest request = PaymentDataRequest.fromJson(paymentDataRequest.toString());
         int env = WalletConstants.ENVIRONMENT_PRODUCTION;
         PaymentsClient client = Wallet.getPaymentsClient(activity,
