@@ -42,17 +42,10 @@ public class GooglePayActivity extends Activity {
     Bundle b = getIntent().getExtras();
     assert b != null;
     paymentDataRequest = (Map) b.getSerializable("paymentDataRequest");
-    environment = b.getString("environment");
-
     int env = WalletConstants.ENVIRONMENT_PRODUCTION;
-    if (environment == "test") {
-      env = WalletConstants.ENVIRONMENT_TEST;
-    }
     mPaymentsClient = Wallet.getPaymentsClient(this, new Wallet.WalletOptions.Builder().setEnvironment(env).build());
     Log.d("GooglePayActivity", "onCreate from GooglePayActivity");
-    Log.d("onCreate", env.toString());
     checkIsGooglePayAvailable();
-    Log.d("checkIsGooglePayAvailable", mIsReadyToPay.toString());
   }
 
   @Override
@@ -76,6 +69,7 @@ public class GooglePayActivity extends Activity {
           public void onComplete(Task<Boolean> task) {
             if (task.isSuccessful()) {
               mIsReadyToPay = true;
+              Log.d("IsGooglePayAvailable", String.valueOf(mIsReadyToPay));
             } else {
               mIsReadyToPay = false;
               Log.w("isReadyToPay failed", task.getException());

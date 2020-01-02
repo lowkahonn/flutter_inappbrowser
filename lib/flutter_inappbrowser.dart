@@ -162,7 +162,6 @@ class InAppBrowser {
     if (data != null) {
       Map<String, dynamic> args = <String, dynamic>{};
       args.putIfAbsent('uuid', () => uuid);
-      args.putIfAbsent('environment', () => data['environment']);
       args.putIfAbsent('paymentDataRequest', () => data['paymentDataRequest']);
       print('loadPaymentData from flutter_inappbrowser.dart');
       print(data['paymentDataRequest']);
