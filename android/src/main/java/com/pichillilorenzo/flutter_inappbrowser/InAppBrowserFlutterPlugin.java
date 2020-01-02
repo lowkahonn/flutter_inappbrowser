@@ -37,6 +37,7 @@ import android.util.Log;
 
 import com.pichillilorenzo.flutter_inappbrowser.ChromeCustomTabs.ChromeCustomTabsActivity;
 import com.pichillilorenzo.flutter_inappbrowser.ChromeCustomTabs.CustomTabActivityHelper;
+import com.pichillilorenzo.flutter_inappbrowser.GooglePayActivity;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -107,10 +108,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
     String source;
     String urlFile;
     final Activity activity = registrar.activity();
-    final String uuid;
-    if (call.argument("uuid") != null) {
-      uuid = (String) call.argument("uuid");
-    }
+    final String uuid = (String) call.argument("uuid");
 
     switch (call.method) {
       case "open":
@@ -315,32 +313,34 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         result.success(getCopyBackForwardList(uuid));
         break;
       case "loadPaymentData":
-        JSONObject paymentDataRequest = new JSONObject((Map)call.arguments);
-        PaymentDataRequest request = PaymentDataRequest.fromJson(paymentDataRequest);
-        int env = WalletConstants.ENVIRONMENT_PRODUCTION;
-        PaymentsClient client = Wallet.getPaymentsClient(activity,
-            new Wallet.WalletOptions.Builder().setEnvironment(env).build());
-        Task<PaymentData> task = client.loadPaymentData(request);
-        task.addOnSuccessListener(new OnSuccessListener<PaymentData>() {
-          @Override
-          public void onSuccess(PaymentData paymentData) {
-            if (paymentData.toJson() != null) {
-              Map<String, Object> data = new HashMap<>();
-              Log.d("PaymentData", String.valueOf(paymentData.toJson()));
-              data.put("paymentData", paymentData.toJson());
-              result.success(data);
-            }
-          }
-        }).addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(Exception e) {
-            Log.d("GooglePayError", e.toString());
-          }
-        });
+        loadPaymentData(activity, (Map) call.arguments);
+        result.success(true);
+        break;
+      case "parsePaymentData":
+        result.success(parsePaymentData((Map) call.arguments));
         break;
       default:
         result.notImplemented();
     }
+  }
+
+  public void loadPaymentData(Activity activity, Map data) {
+    Log.d("InAppBrowserFlutterPlugin", "loadPaymentData from InAppBrowserFlutterPlugin");
+    String environment = (String) data.get("environment");
+    Map paymentDataRequest = (Map) data.get("paymentDataRequest");
+    Intent intent = new Intent(activity, GooglePayActivity.class);
+    Bundle extras = new Bundle();
+
+    extras.putSerializable("paymentDataRequest", (Serializable) paymentDataRequest);
+    extras.putString("environment", environment);
+
+    intent.putExtras(extras);
+    activity.startActivity(intent);
+    Log.d("InAppBrowserFlutterPlugin", "started intent from InAppBrowserFlutterPlugin");
+  }
+
+  public Map parsePaymentData(Map data) {
+    return data;
   }
 
   private void injectScriptCode(String uuid, String source, final Result result) {

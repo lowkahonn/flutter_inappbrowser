@@ -45,22 +45,37 @@ class MyInappBrowser extends InAppBrowser {
  @override
  void shouldOverrideUrlLoading(String url) async {
    print("\n\n override $url\n\n");
-    this.webViewController.loadUrl(url);
-  //  if (await FlutterGooglePay.isAvailable('test')) {
-  //  PaymentBuilder pb = PaymentBuilder()
-  //     ..addGatewayParams({
-  //       'gateway': 'example',
-  //       'stripe:version': '2019-12-03',
-  //       'stripe:publishableKey': 'pk_test'
-  //     })
-  //     ..addTransactionInfo("1", 'HKD', 'HK')
-  //     ..addAllowedCardAuthMethods([AuthMethod.PAN_ONLY, AuthMethod.CRYPTOGRAM_3DS])
-  //     ..addAllowedCardNetworks([PaymentNetwork.VISA, PaymentNetwork.MASTERCARD, PaymentNetwork.AMEX])
-  //     ..addMerchantInfo('myMerchant');
-  //   print(await loadPaymentData(jsonEncode(pb.build())));
-  //  } else {
-  //   this.webViewController.loadUrl(url);
-  //  }
+   this.loadPaymentData({
+    "environment": "test",
+    "paymentDataRequest": {
+      "apiVersion": 2,
+      "apiVersionMinor": 0,
+      "merchantInfo": {
+        "merchantName": "Example Merchant"
+      },
+      "allowedPaymentMethods": [
+        {
+          "type": "CARD",
+          "parameters": {
+            "allowedAuthMethods": ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+            "allowedCardNetworks": ["AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA"]
+          },
+          "tokenizationSpecification": {
+            "type": "PAYMENT_GATEWAY",
+            "parameters": {
+              "gateway": "example",
+              "gatewayMerchantId": "exampleGatewayMerchantId"
+            }
+          }
+        }
+      ],
+      "transactionInfo": {
+        "totalPriceStatus": "FINAL",
+        "totalPrice": "12.34",
+        "currencyCode": "USD"
+      }
+    }
+  });
  }
 
  @override

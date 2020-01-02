@@ -148,7 +148,7 @@ class InAppBrowser {
         break;
       case "loadPaymentData":
         print(call.arguments);
-        print('loading paymentData from inappbrowser');
+        print('_handleMethod from flutter_inappbrowser.dart');
         loadPaymentData(call.arguments);
         break;
       default:
@@ -156,9 +156,14 @@ class InAppBrowser {
     }
   }
 
-  Future<dynamic> loadPaymentData(Map paymentDataRequest) async {
-    if (paymentDataRequest != null) {
-      return await _ChannelManager.channel.invokeMethod('loadPaymentData', paymentDataRequest);
+  Future<dynamic> loadPaymentData(Map data) async {
+    if (data != null) {
+      Map<String, dynamic> args = <String, dynamic>{};
+      args.putIfAbsent('uuid', () => uuid);
+      args.putIfAbsent('environment', () => data['environment']);
+      args.putIfAbsent('paymentDataRequest', () => data['paymentDataRequest']);
+      print('loadPaymentData from flutter_inappbrowser.dart');
+      return await _ChannelManager.channel.invokeMethod('loadPaymentData', args);
     }
   }
   ///Opens an [url] in a new [InAppBrowser] instance.
