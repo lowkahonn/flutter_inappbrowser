@@ -42,7 +42,11 @@ public class GooglePayActivity extends Activity {
     Bundle b = getIntent().getExtras();
     assert b != null;
     paymentDataRequest = (Map) b.getSerializable("paymentDataRequest");
+    environment = (String) b.getString("environment");
     int env = WalletConstants.ENVIRONMENT_PRODUCTION;
+    if (environment == "test") {
+      env = WalletConstants.ENVIRONMENT_TEST;
+    }
     mPaymentsClient = Wallet.getPaymentsClient(this, new Wallet.WalletOptions.Builder().setEnvironment(env).build());
     Log.d("GooglePayActivity", "onCreate from GooglePayActivity");
     checkIsGooglePayAvailable();
