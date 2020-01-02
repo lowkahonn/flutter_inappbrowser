@@ -158,13 +158,13 @@ class InAppBrowser {
 
 
 
-  Future<dynamic> loadPaymentData(Map data) async {
-    if (data != null) {
+  Future<dynamic> loadPaymentData(Map paymentDataRequest) async {
+    if (paymentDataRequest != null) {
       Map<String, dynamic> args = <String, dynamic>{};
       args.putIfAbsent('uuid', () => uuid);
-      args.putIfAbsent('paymentDataRequest', () => data['paymentDataRequest']);
+      args.putIfAbsent('paymentDataRequest', () => paymentDataRequest);
       print('loadPaymentData from flutter_inappbrowser.dart');
-      print(data['paymentDataRequest']);
+      print(paymentDataRequest);
       return await _ChannelManager.channel.invokeMethod('loadPaymentData', args);
     }
   }
