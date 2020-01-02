@@ -340,6 +340,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
   }
 
   public Map parsePaymentData(Map data) {
+    Log.d("GooglePayData", String.valueOf(data));
     return data;
   }
 

@@ -49,6 +49,7 @@ public class GooglePayActivity extends Activity {
     }
     mPaymentsClient = Wallet.getPaymentsClient(this, new Wallet.WalletOptions.Builder().setEnvironment(env).build());
     Log.d("GooglePayActivity", "onCreate from GooglePayActivity");
+    Log.d("onCreate", env.toString());
   }
 
   @Override
@@ -71,6 +72,7 @@ public class GooglePayActivity extends Activity {
 
   private void makePayment(PaymentDataRequest request) {
     if (request != null) {
+      Log.d("GooglePayActivity", "Making Payment");
       Task<PaymentData> task = mPaymentsClient.loadPaymentData(request);
       AutoResolveHelper.resolveTask(task, this, LOAD_PAYMENT_DATA_REQUEST_CODE);
     }
