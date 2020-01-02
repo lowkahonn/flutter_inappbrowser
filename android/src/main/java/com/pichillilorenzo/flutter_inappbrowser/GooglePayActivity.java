@@ -33,6 +33,7 @@ public class GooglePayActivity extends Activity {
   private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 991;
   private Map paymentDataRequest;
   private String environment;
+  private Boolean mIsReadyToPay;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +51,38 @@ public class GooglePayActivity extends Activity {
     mPaymentsClient = Wallet.getPaymentsClient(this, new Wallet.WalletOptions.Builder().setEnvironment(env).build());
     Log.d("GooglePayActivity", "onCreate from GooglePayActivity");
     Log.d("onCreate", env.toString());
+    checkIsGooglePayAvailable();
+    Log.d("checkIsGooglePayAvailable", mIsReadyToPay.toString());
   }
 
   @Override
   protected void onStart() {
     super.onStart();
     requestPayment();
+  }
+
+  private void checkIsGooglePayAvailable() {
+    if (mIsReadyToPay == null) {
+      IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
+        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+        .build();
+      // The call to isReadyToPay is asynchronous and returns a Task. We need to provide an
+      // OnCompleteListener to be triggered when the result of the call is known.
+      Task<Boolean> task = mPaymentsClient.isReadyToPay(request);
+      task.addOnCompleteListener(mActivity,
+        new OnCompleteListener<Boolean>() {
+          @Override
+          public void onComplete(Task<Boolean> task) {
+            if (task.isSuccessful()) {
+              mIsReadyToPay = true;
+            } else {
+              mIsReadyToPay = false;
+              Log.w("isReadyToPay failed", task.getException());
+            }
+          }
+        });
+    }
   }
 
   private void requestPayment() {
