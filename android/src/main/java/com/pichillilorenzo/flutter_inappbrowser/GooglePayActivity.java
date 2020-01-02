@@ -63,7 +63,7 @@ public class GooglePayActivity extends Activity {
       // The call to isReadyToPay is asynchronous and returns a Task. We need to provide an
       // OnCompleteListener to be triggered when the result of the call is known.
       Task<Boolean> task = mPaymentsClient.isReadyToPay(request);
-      task.addOnCompleteListener(mActivity,
+      task.addOnCompleteListener(this,
         new OnCompleteListener<Boolean>() {
           @Override
           public void onComplete(Task<Boolean> task) {
@@ -82,7 +82,7 @@ public class GooglePayActivity extends Activity {
   private void requestPayment() {
     try {
       Log.d("GooglePayActivity", "requestPayment from GooglePayActivity");
-      JSONObject paymentData = new JSONObject(paymentDataRequest);
+      JSONObject paymentData = new JSONObject((Map) paymentDataRequest);
       Log.d("PaymentData", String.valueOf(paymentData.toString()));
       PaymentDataRequest request = PaymentDataRequest.fromJson(paymentData.toString());
       Log.d("request", String.valueOf(request));
