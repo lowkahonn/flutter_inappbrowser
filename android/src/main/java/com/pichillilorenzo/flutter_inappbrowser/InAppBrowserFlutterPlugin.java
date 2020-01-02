@@ -336,6 +336,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
 
     intent.putExtras(extras);
     activity.startActivity(intent);
+    Log.d("InAppBrowserFlutterPlugin", environment);
     Log.d("InAppBrowserFlutterPlugin", "started intent from InAppBrowserFlutterPlugin");
   }
 
