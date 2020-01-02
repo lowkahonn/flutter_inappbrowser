@@ -83,8 +83,9 @@ public class GooglePayActivity extends Activity {
     try {
       Log.d("GooglePayActivity", "requestPayment from GooglePayActivity");
       JSONObject paymentData = new JSONObject(paymentDataRequest);
+      Log.d("PaymentData", String.valueOf(paymentData.toString()));
       PaymentDataRequest request = PaymentDataRequest.fromJson(paymentData.toString());
-      Log.d("request", String.valueOf(paymentData));
+      Log.d("request", String.valueOf(request));
       this.makePayment(request);
     } catch (Exception e) {
       callToDartOnError(e.getMessage());

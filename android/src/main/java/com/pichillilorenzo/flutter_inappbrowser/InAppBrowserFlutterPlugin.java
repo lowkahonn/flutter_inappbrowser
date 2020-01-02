@@ -317,7 +317,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
         result.success(true);
         break;
       case "parsePaymentData":
-        result.success(parsePaymentData((Map) call.arguments));
+        parsePaymentData((Map) call.arguments);
         break;
       default:
         result.notImplemented();
@@ -339,9 +339,8 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
     Log.d("InAppBrowserFlutterPlugin", "started intent from InAppBrowserFlutterPlugin");
   }
 
-  public Map parsePaymentData(Map data) {
-    Log.d("GooglePayData", String.valueOf(data));
-    return data;
+  private void parsePaymentData(Map data) {
+    Log.d("GooglePayParsePaymentData", String.valueOf(data));
   }
 
   private void injectScriptCode(String uuid, String source, final Result result) {

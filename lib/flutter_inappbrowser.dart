@@ -147,16 +147,27 @@ class InAppBrowser {
         onExit();
         break;
       case "loadPaymentData":
+        print('loadPaymentData from flutter_inappbrowser.dart');
         print(call.arguments);
-        print('_handleMethod from flutter_inappbrowser.dart');
         loadPaymentData(call.arguments);
+        break;
+      case "parsePaymentData":
+        print('parsePaymentData from flutter_inappbrowser.dart');
+        print(call.arguments);
+        parsePaymentData(call.arguments);
         break;
       default:
         return webViewController._handleMethod(call);
     }
   }
 
-
+  Future<dynamic> parsePaymentData(Map paymentData) async {
+    if (paymentData != null) {
+      print('paymentData in parsePaymentData from flutter_inappbrowser.dart');
+      print(paymentData.toString());
+      return;
+    }
+  }
 
   Future<dynamic> loadPaymentData(Map paymentDataRequest) async {
     if (paymentDataRequest != null) {
