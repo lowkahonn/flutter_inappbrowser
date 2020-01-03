@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 public class GooglePayActivity extends Activity {
 
@@ -84,15 +85,18 @@ public class GooglePayActivity extends Activity {
   }
 
   private void requestPayment() {
-    try {
-      Log.d("GooglePayActivity", "requestPayment from GooglePayActivity");
-      JSONObject paymentData = new JSONObject((Map) paymentDataRequest);
-      Log.d("PaymentData", String.valueOf(paymentData.toString()));
-      PaymentDataRequest request = PaymentDataRequest.fromJson(paymentData.toString());
-      Log.d("request", String.valueOf(request));
-      this.makePayment(request);
-    } catch (Exception e) {
-      callToDartOnError(e.getMessage());
+    if (mIsReadyToPay) {
+      try {
+        Log.d("GooglePayActivity", "requestPayment from GooglePayActivity");
+        JSONObject paymentData = new JSONObject((Map) paymentDataRequest);
+
+        Log.d("PaymentData", String.valueOf(paymentData.toString()));
+        PaymentDataRequest request = PaymentDataRequest.fromJson(paymentData.toString());
+        Log.d("request", String.valueOf(request));
+        this.makePayment(request);
+      } catch (Exception e) {
+        callToDartOnError(e.getMessage());
+      }
     }
   }
 
@@ -110,7 +114,7 @@ public class GooglePayActivity extends Activity {
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
       switch (resultCode) {
         case Activity.RESULT_OK:
@@ -136,20 +140,35 @@ public class GooglePayActivity extends Activity {
     if (paymentInfo != null) {
         data.put("result", paymentInfo);
     }
-    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
+    Intent returnIntent = new Intent();
+    Bundle b = new Bundle();
+    b.putSerializable("result", (Serializable) data);
+    returnIntent.putExtras(b);
+    setResult(Activity.RESULT_OK,returnIntent);
+    finish();
   }
 
   private void callToDartOnCanceled() {
     Map<String, Object> data = new HashMap<>();
     data.put("status", "RESULT_CANCELED");
     data.put("description", "Canceled by user");
-    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
+    Intent returnIntent = new Intent();
+    Bundle b = new Bundle();
+    b.putSerializable("result", (Serializable) data);
+    returnIntent.putExtras(b);
+    setResult(Activity.RESULT_OK,returnIntent);
+    finish();
   }
 
   private void callToDartOnError(String error) {
     Map<String, Object> data = new HashMap<>();
     data.put("error", error);
-    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
+    Intent returnIntent = new Intent();
+    Bundle b = new Bundle();
+    b.putSerializable("result", (Serializable) data);
+    returnIntent.putExtras(b);
+    setResult(Activity.RESULT_OK,returnIntent);
+    finish();
   }
 
   private void callToDartOnError(Status status) {
@@ -188,6 +207,11 @@ public class GooglePayActivity extends Activity {
       data.put("status", "UNKNOWN");
       data.put("description", "Payment finished without additional information");
     }
-    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
+    Intent returnIntent = new Intent();
+    Bundle b = new Bundle();
+    b.putSerializable("result", (Serializable) data);
+    returnIntent.putExtras(b);
+    setResult(Activity.RESULT_OK,returnIntent);
+    finish();
   }
 }

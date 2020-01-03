@@ -45,7 +45,7 @@ class MyInappBrowser extends InAppBrowser {
  @override
  void shouldOverrideUrlLoading(String url) async {
    print("\n\n override $url\n\n");
-   this.loadPaymentData({
+   print(await this.loadPaymentData({
     "environment": "test",
     "paymentDataRequest": {
       "apiVersion": 2,
@@ -75,7 +75,7 @@ class MyInappBrowser extends InAppBrowser {
         "currencyCode": "USD"
       }
     }
-  });
+  }));
  }
 
  @override
