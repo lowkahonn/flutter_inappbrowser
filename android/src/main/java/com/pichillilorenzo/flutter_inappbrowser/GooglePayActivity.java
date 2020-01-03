@@ -34,7 +34,7 @@ public class GooglePayActivity extends Activity {
   private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 991;
   private Map paymentDataRequest;
   private String environment;
-  private Boolean mIsReadyToPay;
+  private boolean mIsReadyToPay;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class GooglePayActivity extends Activity {
   }
 
   private void checkIsGooglePayAvailable() {
-    if (mIsReadyToPay == null) {
+    if (mIsReadyToPay != true) {
       IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
         .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
         .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
