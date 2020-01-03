@@ -88,7 +88,7 @@ public class GooglePayActivity extends Activity {
     if (mIsReadyToPay) {
       try {
         Log.d("GooglePayActivity", "requestPayment from GooglePayActivity");
-        JSONObject paymentData = new JSONObject((Map) {"apiVersion": 2, "apiVersionMinor": 0, "allowedPaymentMethods": [{"type": "CARD", "parameters": {"allowedAuthMethods": ["PAN_ONLY", "CRYPTOGRAM_3DS"], "allowedCardNetworks": ["VISA", "MASTERCARD", "AMEX"]}, "tokenizationSpecification": {"type": "PAYMENT_GATEWAY", "parameters": {"gateway": "example", "gatewayMerchantId": "exmaple"}}}], "transactionInfo": {"totalPrice": "0.1", "totalPriceStatus": "FINAL", "currencyCode": "HKD", "countryCode": "HK"}});
+        JSONObject paymentData = new JSONObject((Map) paymentDataRequest);
 
         Log.d("PaymentData", String.valueOf(paymentData.toString()));
         PaymentDataRequest request = PaymentDataRequest.fromJson(paymentData.toString());
