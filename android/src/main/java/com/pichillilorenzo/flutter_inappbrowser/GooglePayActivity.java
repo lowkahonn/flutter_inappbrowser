@@ -156,7 +156,7 @@ public class GooglePayActivity extends Activity {
     Bundle b = new Bundle();
     b.putSerializable("result", (Serializable) data);
     returnIntent.putExtras(b);
-    setResult(Activity.RESULT_OK,returnIntent);
+    setResult(Activity.RESULT_CANCELED,returnIntent);
     finish();
   }
 
@@ -167,7 +167,7 @@ public class GooglePayActivity extends Activity {
     Bundle b = new Bundle();
     b.putSerializable("result", (Serializable) data);
     returnIntent.putExtras(b);
-    setResult(Activity.RESULT_OK,returnIntent);
+    setResult(Activity.RESULT_CANCELED,returnIntent);
     finish();
   }
 
@@ -211,7 +211,7 @@ public class GooglePayActivity extends Activity {
     Bundle b = new Bundle();
     b.putSerializable("result", (Serializable) data);
     returnIntent.putExtras(b);
-    setResult(Activity.RESULT_OK,returnIntent);
+    setResult(Activity.RESULT_CANCELED,returnIntent);
     finish();
   }
 }

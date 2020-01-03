@@ -330,6 +330,9 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler, PluginRegis
         mLastResult.success(resultData);
         return true;
       }
+      if (resultCode == Activity.RESULT_CANCELED) {
+        return false;
+      }
     }
     return false;
   }
@@ -340,6 +343,9 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler, PluginRegis
         Map resultData = (Map) data.getSerializableExtra("result");
         mLastResult.success(resultData);
         return true;
+      }
+      if (resultCode == Activity.RESULT_CANCELED) {
+        return false;
       }
     }
     return false;
