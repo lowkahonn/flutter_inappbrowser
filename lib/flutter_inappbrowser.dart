@@ -161,11 +161,11 @@ class InAppBrowser {
     }
   }
 
-  Future<dynamic> parsePaymentData(Map paymentData) async {
+  void parsePaymentData(Map paymentData) async {
     if (paymentData != null) {
       print('paymentData in parsePaymentData from flutter_inappbrowser.dart');
       print(paymentData.toString());
-      return await _ChannelManager.channel.invokeMethod('parsePaymentData', paymentData);
+      await _ChannelManager.channel.invokeMethod('parsePaymentData', paymentData);
     }
   }
 
