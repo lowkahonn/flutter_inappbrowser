@@ -70,40 +70,41 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * InAppBrowserFlutterPlugin
  */
-public class InAppBrowserFlutterPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class InAppBrowserFlutterPlugin implements MethodCallHandler {
 
   public Registrar registrar;
   public static MethodChannel channel;
   public static Map<String, InAppBrowserActivity> webViewActivities = new HashMap<>();
   public static Map<String, ChromeCustomTabsActivity> chromeCustomTabsActivities = new HashMap<>();
   private Result mLastResult;
-  private Activity mActivity;
-  private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 991;
 
   protected static final String LOG_TAG = "IABFlutterPlugin";
 
-  private InAppBrowserFlutterPlugin(Activity activity) {
-    this.mActivity = activity;
+  public InAppBrowserFlutterPlugin(Registrar r) {
+    registrar = r;
+    channel = new MethodChannel(registrar.messenger(), "com.pichillilorenzo/flutter_inappbrowser");
   }
 
   /**
    * Plugin registration.
    */
   public static void registerWith(Registrar registrar) {
+    Activity activity = registrar.activity();
     // registrar.activity() may return null because of Flutter's background execution feature
     // described here: https://medium.com/flutter-io/executing-dart-in-the-background-with-flutter-plugins-and-geofencing-2b3e40a1a124
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.pichillilorenzo/flutter_inappbrowser");
-    InAppBrowserFlutterPlugin plugin = new InAppBrowserFlutterPlugin(registrar.activity());
-    channel.setMethodCallHandler(plugin);
-    registrar.addActivityResultListener(plugin);
+    if (activity != null) {
+      final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.pichillilorenzo/flutter_inappbrowser");
+      channel.setMethodCallHandler(new InAppBrowserFlutterPlugin(registrar));
 
-    new MyCookieManager(registrar);
+      new MyCookieManager(registrar);
 
-    registrar
-            .platformViewRegistry()
-            .registerViewFactory(
-                    "com.pichillilorenzo/flutter_inappwebview", new FlutterWebViewFactory(registrar));
+      registrar
+              .platformViewRegistry()
+              .registerViewFactory(
+                      "com.pichillilorenzo/flutter_inappwebview", new FlutterWebViewFactory(registrar));
+    }
   }
+
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
@@ -318,44 +319,19 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler, PluginRegis
         mLastResult = result;
         loadPaymentData(activity, (Map) call.arguments);
         break;
+      case "parsePaymentData":
+        mLastResult.success((Map) call.arguments);
+        break;
       default:
         result.notImplemented();
     }
-  }
-
-  public boolean onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
-      if (resultCode == Activity.RESULT_OK) {
-        Map resultData = (Map) data.getSerializableExtra("result");
-        mLastResult.success(resultData);
-        return true;
-      }
-      if (resultCode == Activity.RESULT_CANCELED) {
-        return false;
-      }
-    }
-    return false;
-  }
-
-  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
-      if (resultCode == Activity.RESULT_OK) {
-        Map resultData = (Map) data.getSerializableExtra("result");
-        mLastResult.success(resultData);
-        return true;
-      }
-      if (resultCode == Activity.RESULT_CANCELED) {
-        return false;
-      }
-    }
-    return false;
   }
 
   public void loadPaymentData(Activity activity, Map data) {
     Log.d("InAppBrowserFlutterPlugin", "loadPaymentData from InAppBrowserFlutterPlugin");
     String environment = (String) data.get("environment");
     String debugEnv = "environment is " + environment;
-    Log.d("InAppBrowserFlutterPlugin", environment);
+    Log.d("InAppBrowserFlutterPlugin", String.valueOf(environment));
     Map paymentDataRequest = (Map) data.get("paymentDataRequest");
     Intent intent = new Intent(activity, GooglePayActivity.class);
     Bundle extras = new Bundle();
@@ -364,7 +340,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler, PluginRegis
     extras.putString("environment", environment);
 
     intent.putExtras(extras);
-    activity.startActivityForResult(intent, LOAD_PAYMENT_DATA_REQUEST_CODE);
+    activity.startActivity(intent);
     Log.d("InAppBrowserFlutterPlugin", "started intent from InAppBrowserFlutterPlugin");
   }
 

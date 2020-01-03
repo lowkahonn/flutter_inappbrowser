@@ -165,7 +165,7 @@ class InAppBrowser {
     if (paymentData != null) {
       print('paymentData in parsePaymentData from flutter_inappbrowser.dart');
       print(paymentData.toString());
-      return;
+      return await _ChannelManager.channel.invokeMethod('parsePaymentData', paymentData);
     }
   }
 

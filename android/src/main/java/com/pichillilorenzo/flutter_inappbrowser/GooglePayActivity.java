@@ -140,11 +140,7 @@ public class GooglePayActivity extends Activity {
     if (paymentInfo != null) {
         data.put("result", paymentInfo);
     }
-    Intent returnIntent = new Intent();
-    Bundle b = new Bundle();
-    b.putSerializable("result", (Serializable) data);
-    returnIntent.putExtras(b);
-    setResult(Activity.RESULT_OK,returnIntent);
+    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
     finish();
   }
 
@@ -152,22 +148,14 @@ public class GooglePayActivity extends Activity {
     Map<String, Object> data = new HashMap<>();
     data.put("status", "RESULT_CANCELED");
     data.put("description", "Canceled by user");
-    Intent returnIntent = new Intent();
-    Bundle b = new Bundle();
-    b.putSerializable("result", (Serializable) data);
-    returnIntent.putExtras(b);
-    setResult(Activity.RESULT_CANCELED,returnIntent);
+    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
     finish();
   }
 
   private void callToDartOnError(String error) {
     Map<String, Object> data = new HashMap<>();
     data.put("error", error);
-    Intent returnIntent = new Intent();
-    Bundle b = new Bundle();
-    b.putSerializable("result", (Serializable) data);
-    returnIntent.putExtras(b);
-    setResult(Activity.RESULT_CANCELED,returnIntent);
+    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
     finish();
   }
 
@@ -207,11 +195,7 @@ public class GooglePayActivity extends Activity {
       data.put("status", "UNKNOWN");
       data.put("description", "Payment finished without additional information");
     }
-    Intent returnIntent = new Intent();
-    Bundle b = new Bundle();
-    b.putSerializable("result", (Serializable) data);
-    returnIntent.putExtras(b);
-    setResult(Activity.RESULT_CANCELED,returnIntent);
+    InAppBrowserFlutterPlugin.channel.invokeMethod("parsePaymentData", data);
     finish();
   }
 }
